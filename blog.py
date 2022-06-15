@@ -13,6 +13,11 @@ class RegisterForm(Form):
         validators.EqualTo(fieldname = "confirm",message="Parolaniz Uyusmuyor")
     ])
     confirm = PasswordField("Parola Dogrula")
+# Login Formu
+class LoginForm(Form):
+    username =  StringField("Kullanici Adi")
+    password = PasswordField("Parola")
+
 
 app = Flask(__name__)
 app.secret_key = "adilblog"
@@ -44,7 +49,7 @@ def register():
     form = RegisterForm(request.form)
     if request.method == "POST" and form.validate():
         name = form.name.data
-        username = form.name.data
+        username = form.username.data
         email = form.email.data
         password =sha256_crypt.encrypt(form.password.data)
         cursor = mysql.connection.cursor()
@@ -54,10 +59,35 @@ def register():
         mysql.connection.commit()
         cursor.close()
         flash("Basariyla Kayit oldunuz...","success")
-        return redirect(url_for("index"))
+        return redirect(url_for("login"))
     else: 
         return render_template("register.html",form=form)
+#Login islemi
+@app.route("/login", methods = ["GET","POST"])
+def login():
+    form = LoginForm(request.form)
+    if request.method == "POST":
+        username = form.username.data
+        password_entered = form.password.data
 
+        cursor = mysql.connection.cursor()
+        
+        sorgu = "Select * From users where username = %s"
+
+        result = cursor.execute(sorgu,(username,))
+        if result > 0:
+            data = cursor.fetchone()
+            real_password = data["password"]
+            if sha256_crypt.verify(password_entered, real_password):
+                flash("Basariyla Giris Yaptiniz....", "success")
+                return redirect(url_for("index"))
+            else:
+                flash("Parolanizi Yanlis Girdiniz...", "danger")
+                return redirect(url_for("login"))
+        else:
+            flash("Boyle bir Kullanici adi bulunmuyor...", "danger")
+            return redirect(url_for("login"))
+    return render_template("login.html",form = form)
 
 if __name__ == "__main__":
     app.run(debug=True)
