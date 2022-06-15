@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+
+
+{% block body %}
+<div class="jumbotron text-center">
+    <h3>Adil Ehmedzadenin Bloguna Xosgeldiniz.</h3>
+    <p>Bu Blogta yazilimla ilgili konulari yazarak insanlarla boluse bilersiniz. </p>
+</div>
+
+<ul>
+    {% for a in articles %}
+        <li>Article ID: {{a.id}} - Title: {{a.title}}- Content: {{a.content}}</li>
+    {% endfor %}
+</ul>
+
+{% endblock%}
