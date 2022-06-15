@@ -15,7 +15,7 @@ class RegisterForm(Form):
     confirm = PasswordField("Parola Dogrula")
 
 app = Flask(__name__)
-
+app.secret_key = "adilblog"
 app.config["MYSQL_HOST"] = "localhost"
 app.config["MYSQL_USER"] = "root"
 app.config["MYSQL_PASSWORD"] = ""
@@ -53,6 +53,7 @@ def register():
         cursor.execute(sorgu,(name,email,username,password))
         mysql.connection.commit()
         cursor.close()
+        flash("Basariyla Kayit oldunuz...","success")
         return redirect(url_for("index"))
     else: 
         return render_template("register.html",form=form)
