@@ -80,6 +80,10 @@ def login():
             real_password = data["password"]
             if sha256_crypt.verify(password_entered, real_password):
                 flash("Basariyla Giris Yaptiniz....", "success")
+
+                session["logged_in"] = True
+                session["username"] = username
+
                 return redirect(url_for("index"))
             else:
                 flash("Parolanizi Yanlis Girdiniz...", "danger")
@@ -88,6 +92,14 @@ def login():
             flash("Boyle bir Kullanici adi bulunmuyor...", "danger")
             return redirect(url_for("login"))
     return render_template("login.html",form = form)
+#Logout islemi
+@app.route("/logout")
+def logout():
+    session.clear()
+    flash("Cikis Yapildi..", "primary")
+    return redirect(url_for("index"))
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
